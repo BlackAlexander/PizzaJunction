@@ -1,0 +1,14 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/kidga/Desktop/Informatica/C++ Programming, CodeBlocks Projects/An 2/CLion/PizzaJunction/main.cpp
+bits/stdc++.h
+-
+unistd.h
+-
+

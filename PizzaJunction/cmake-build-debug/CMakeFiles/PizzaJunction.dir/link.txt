@@ -1,0 +1,3 @@
+"C:\Program Files\JetBrains\CLion 2021.2.2\bin\cmake\win\bin\cmake.exe" -E rm -f CMakeFiles\PizzaJunction.dir/objects.a
+C:\MinGW\bin\ar.exe cr CMakeFiles\PizzaJunction.dir/objects.a @CMakeFiles\PizzaJunction.dir\objects1.rsp
+C:\MinGW\bin\g++.exe -g -Wl,--whole-archive CMakeFiles\PizzaJunction.dir/objects.a -Wl,--no-whole-archive -o PizzaJunction.exe -Wl,--out-implib,libPizzaJunction.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\PizzaJunction.dir\linklibs.rsp
