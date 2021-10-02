@@ -2,10 +2,12 @@
 #include <unistd.h>
 #define timeWait 2
 #define nrRoads 20
-#define maxX 150
-#define maxY 150
+#define maxX 142
+#define maxY 142
 #define offset 4.6
+#define addOffset 4.5
 #define PI 3.14159265
+#define ratioConstant 0.05
 
 
 using namespace std;
@@ -65,23 +67,23 @@ double toRad(int x)
 bool road[nrRoads];
 
 vector <pair <double, double> > roadNodes(nrRoads);
-const double startingX[17] = {0, maxX, maxX, //1 2
-                      cos(toRad(45)) * maxX + offset / 2,  cos(toRad(45)) * maxX, //3 4
+const double startingX[17] = {0, maxX + addOffset, maxX + addOffset, //1 2
+                      cos(toRad(45)) * maxX + offset * sqrt(2),  cos(toRad(45)) * maxX, //3 4
                       offset, -offset, //5 6
-                      -(cos(toRad(45)) * maxX),  -(cos(toRad(45)) * maxX + offset / 2), //7 8
-                      -maxX, -maxX,  //9 10
-                      -(cos(toRad(45)) * maxX  + offset / 2),  -(cos(toRad(45)) * maxX), //11 12
+                      -(cos(toRad(45)) * maxX),  -(cos(toRad(45)) * maxX + offset * sqrt(2)), //7 8
+                      -(maxX + addOffset), -(maxX + addOffset),  //9 10
+                      -(cos(toRad(45)) * maxX + offset * sqrt(2)),  -(cos(toRad(45)) * maxX), //11 12
                       -offset, offset, //13 14
-                      cos(toRad(45)) * maxX,  cos(toRad(45)) * maxX  + offset / 2, //15 16
+                      cos(toRad(45)) * maxX,  cos(toRad(45)) * maxX + offset * sqrt(2), //15 16
                     };
 const double startingY[17] = {0, -offset, offset, //1 2
-                      sin(toRad(45)) * maxY, sin(toRad(45)) * maxY + offset / 2, //3 4
-                      maxY, maxY, //5 6
-                      sin(toRad(45)) * maxY + offset / 2, sin(toRad(45)) * maxY, //7 8
+                      sin(toRad(45)) * maxY, sin(toRad(45)) * maxY + offset * sqrt(2), //3 4
+                      maxY + addOffset, maxY + addOffset, //5 6
+                      sin(toRad(45)) * maxY + offset* sqrt(2), sin(toRad(45)) * maxY, //7 8
                       offset, -offset, //9 10
-                      -(sin(toRad(45)) * maxY), -(sin(toRad(45)) * maxY + offset / 2), //11 12
-                      -maxY, -maxY, //13 14
-                      -(sin(toRad(45)) * maxY  + offset / 2), -(sin(toRad(45)) * maxY), //15 16
+                      -(sin(toRad(45)) * maxY), -(sin(toRad(45)) * maxY + offset * sqrt(2)), //11 12
+                      -(maxY + addOffset), -(maxY + addOffset), //13 14
+                      -(sin(toRad(45)) * maxY  + offset * sqrt(2)), -(sin(toRad(45)) * maxY), //15 16
                      };
 
 void readRoads()
@@ -119,9 +121,9 @@ void generateCenteredJunction()
         if (road[i])
             ++nrOfRoads;
     }
-    double ratio = 0.05 * nrOfRoads;
+    double ratio = ratioConstant * nrOfRoads;
     double ratioStraight = ratio;
-    double ratioDiagonal = ratio - 0.05;
+    double ratioDiagonal = ratio - ratioConstant;
 
     for (int i = 1; i <= 16; ++i) {
         if (road[i]) {
@@ -156,7 +158,7 @@ void generateCenteredJunction()
 
 void outputCenteredJunction()
 {
-    SamitoAlex.open("Sugestion1.txt");
+    SamitoAlex.open("Suggestion1.txt");
 
     double lastX, lastY;
     double firstX, firstY;
@@ -167,33 +169,33 @@ void outputCenteredJunction()
     for (int i = 1; i <= 16; ++i) {
         for (int j = 0; j < traseu[i].size(); ++j) {
             if (j == 0) {
-                SamitoAlex << int(traseu[i][j].first) << " " << (-1)*int(traseu[i][j].second) << " ";
+                SamitoAlex << traseu[i][j].first << " " << (-1)*(traseu[i][j].second) << " ";
             }
             else if (j == traseu[i].size() - 1) {
                 if (firstX == -1000 && firstY == -1000) {
-                    firstX = int(traseu[i][j].first);
+                    firstX = traseu[i][j].first;
                     firstY = int(-traseu[i][j].second);
                 }
-                SamitoAlex << int(traseu[i][j].first) << " " << (-1)*int(traseu[i][j].second) << " 0\n";
+                SamitoAlex << traseu[i][j].first << " " << (-1)*(traseu[i][j].second) << " 0\n";
                 if (lastX != -1000 and lastY != -1000) {
                     SamitoAlex << lastX << " " << lastY << " ";
-                    SamitoAlex << int(traseu[i][j].first) << " " << (-1)*int(traseu[i][j].second) << " 0\n";
+                    SamitoAlex << traseu[i][j].first << " " << (-1)*(traseu[i][j].second) << " 0\n";
                 }
-                lastX = int(traseu[i][j].first);
+                lastX = traseu[i][j].first;
                 lastY = int(-traseu[i][j].second);
 
             }
 //            else {
-//                SamitoAlex << int(traseu[i][j].first) << " " << (-1)*int(traseu[i][j].second) << "\n\n";
+//                SamitoAlex << traseu[i][j].first << " " << (-1)*(traseu[i][j].second) << "\n\n";
 //
 //                if (lastX != -1000 and lastY != -1000) {
 //                    SamitoAlex << lastX << " " << lastY << "\n";
-//                    SamitoAlex << int(traseu[i][j].first) << " " << (-1)*int(traseu[i][j].second) << "\n\n";
+//                    SamitoAlex << traseu[i][j].first << " " << (-1)*(traseu[i][j].second) << "\n\n";
 //                }
-//                lastX = int(traseu[i][j].first);
+//                lastX = traseu[i][j].first;
 //                lastY = int(-traseu[i][j].second);
 //
-//                SamitoAlex << int(traseu[i][j].first) << " " << (-1)*int(traseu[i][j].second) << "\n";
+//                SamitoAlex << traseu[i][j].first << " " << (-1)*(traseu[i][j].second) << "\n";
 //            }
             //debug(lastX, lastY);
         }
@@ -213,15 +215,72 @@ void generateRoundabout()
         if (road[i])
             ++nrOfRoads;
     }
-    double ratio = 0.05 * nrOfRoads;
+    double ratio = ratioConstant * nrOfRoads;
     double ratioStraight = ratio;
-    double ratioDiagonal = ratio - 0.05;
+    double ratioDiagonal = ratio - ratioConstant;
 
     for (int i = 1; i <= 16; ++i) {
-        if (road[i]) {
-            traseu[i].push_back({startingX[i].first, startingY[i].second});
+        traseu[i].push_back({startingX[i], startingY[i]});
+
+        if (i == 1 or i == 2) {
+            traseu[i].push_back({ratioStraight * roadNodes[i].first, roadNodes[i].second});
+        }
+        if (i == 3 or i == 4) {
+            traseu[i].push_back({ratioDiagonal * roadNodes[i].first, ratioDiagonal * roadNodes[i].second});
+        }
+        if (i == 5 or i == 6) {
+            traseu[i].push_back({roadNodes[i].first, ratioStraight * roadNodes[i].second});
+        }
+        if (i == 7 or i == 8) {
+            traseu[i].push_back({ratioDiagonal * roadNodes[i].first, ratioDiagonal * roadNodes[i].second});
+        }
+        if (i == 9 or i == 10) {
+            traseu[i].push_back({ratioStraight * roadNodes[i].first, roadNodes[i].second});
+        }
+        if (i == 11 or i == 12) {
+            traseu[i].push_back({ratioDiagonal * roadNodes[i].first, ratioDiagonal * roadNodes[i].second});
+        }
+        if (i == 13 or i == 14) {
+            traseu[i].push_back({roadNodes[i].first, ratioStraight * roadNodes[i].second});
+        }
+        if (i == 15 or i == 16) {
+            traseu[i].push_back({ratioDiagonal * roadNodes[i].first, ratioDiagonal * roadNodes[i].second});
+        }
+        //debug(i, traseu[i]);
+    }
+}
+
+void outputRoundabout()
+{
+    SamitoAlex.open("Suggestion2.txt");
+
+    SamitoAlex << nrOfRoads + 16 << "\n";
+    for (int i = 1; i <= 16; ++i) {
+        for (int j = 0; j < traseu[i].size(); ++j) {
+            if (road[i] and j == 0) {
+                SamitoAlex << traseu[i][j].first << " " << (-1)*(traseu[i][j].second) << " ";
+            }
+            if (road[i] and j == 1) {
+                SamitoAlex << traseu[i][j].first << " " << (-1)*(traseu[i][j].second) << " 0\n";
+            }
         }
     }
+
+    vector <pair <double, double> > points(nrRoads);
+
+    for (int i = 1; i <= 16; ++i) {
+        points[i] = traseu[i][0];
+        traseu[i].clear();
+    }
+
+    for (int i = 2; i <= 16; ++i) {
+        SamitoAlex << points[i - 1].first << " " << (-1)*(points[i - 1].second) << " " << points[i].first <<  " " << points[i].second << "0\n";
+    }
+    SamitoAlex << points[1].first << " " << (-1)*(points[1].second) << " " << points[16].first <<  " " << points[16].second << "0\n";
+
+    points.clear();
+    SamitoAlex.flush();
+    SamitoAlex.close();
 }
 
 void readInfo()
@@ -274,14 +333,14 @@ void readInfo()
             outputCenteredJunction();
 
 //            Generate Roundabout
-            //generateRoundabout();
+            generateRoundabout();
 
             SamitoAlex.open("StoA.txt", ios::app);
             SamitoAlex << "Roundabout\n";
             SamitoAlex.flush();
             SamitoAlex.close();
 
-            //outputCenteredJunction();
+            outputRoundabout();
 
 
             //format for output is:
