@@ -37,7 +37,7 @@ void _print(T t, V... v) {__print(t); if (sizeof...(v)) cerr << ", "; _print(v..
 #ifndef ONLINE_JUDGE
 #define debug(x...) cerr << "[" << #x << "] = ["; _print(x)
 #else
-#define debu  g(x...)
+#define debug(x...)
 #endif
 
 ifstream AlextoSami("AlextoSami.txt"); // INPUT
@@ -65,6 +65,7 @@ double toRad(int x)
 }
 
 bool road[nrRoads];
+string nextSuggestion;
 
 vector <pair <double, double> > roadNodes(nrRoads);
 const double startingX[17] = {0, maxX + addOffset, maxX + addOffset, //1 2
@@ -85,17 +86,21 @@ const double startingY[17] = {0, -offset, offset, //1 2
                       -(maxY + addOffset), -(maxY + addOffset), //13 14
                       -(sin(toRad(45)) * maxY  + offset * sqrt(2)), -(sin(toRad(45)) * maxY), //15 16
                      };
+int nrOfRoads;
 
 void readRoads()
 {
 
     char word;
+    nrOfRoads = 0;
     for (int i = 1; i <= 16; ++i) {
         AlextoSami >> word;
         if (word == '0')
             road[i] = false;
-        else
+        else {
             road[i] = true;
+            ++nrOfRoads;
+        }
 
         if (road[i]) {
             double x, y;
@@ -112,15 +117,10 @@ void readRoads()
 }
 
 vector <pair <double, double> > traseu[nrRoads];
-int nrOfRoads;
+
 
 void generateCenteredJunction()
 {
-    nrOfRoads = 0;
-    for (int i = 1; i <= 16; ++i) {
-        if (road[i])
-            ++nrOfRoads;
-    }
     double ratio = ratioConstant * nrOfRoads;
     double ratioStraight = ratio;
     double ratioDiagonal = ratio - ratioConstant;
@@ -158,7 +158,8 @@ void generateCenteredJunction()
 
 void outputCenteredJunction()
 {
-    SamitoAlex.open("Suggestion1.txt");
+    SamitoAlex.open(nextSuggestion);
+    nextSuggestion[10]++;
 
     double lastX, lastY;
     double firstX, firstY;
@@ -182,7 +183,7 @@ void outputCenteredJunction()
                     SamitoAlex << traseu[i][j].first << " " << (-1)*(traseu[i][j].second) << " 0\n";
                 }
                 lastX = traseu[i][j].first;
-                lastY = int(-traseu[i][j].second);
+                lastY = -traseu[i][j].second;
 
             }
 //            else {
@@ -203,6 +204,7 @@ void outputCenteredJunction()
     }
 
     SamitoAlex << firstX << " " << firstY << " " << lastX << " " << lastY << " 0\n";
+    SamitoAlex << "Centered Junction\n";
 
     SamitoAlex.flush();
     SamitoAlex.close();
@@ -210,11 +212,6 @@ void outputCenteredJunction()
 
 void generateRoundabout()
 {
-    nrOfRoads = 0;
-    for (int i = 1; i <= 16; ++i) {
-        if (road[i])
-            ++nrOfRoads;
-    }
     double ratio = ratioConstant * nrOfRoads;
     double ratioStraight = ratio;
     double ratioDiagonal = ratio - ratioConstant;
@@ -223,36 +220,36 @@ void generateRoundabout()
         traseu[i].push_back({startingX[i], startingY[i]});
 
         if (i == 1 or i == 2) {
-            traseu[i].push_back({ratioStraight * roadNodes[i].first, roadNodes[i].second});
+            traseu[i].push_back({ratioStraight * startingX[i], startingY[i]});
         }
         if (i == 3 or i == 4) {
-            traseu[i].push_back({ratioDiagonal * roadNodes[i].first, ratioDiagonal * roadNodes[i].second});
+            traseu[i].push_back({ratioDiagonal * startingX[i], ratioDiagonal * startingY[i]});
         }
         if (i == 5 or i == 6) {
-            traseu[i].push_back({roadNodes[i].first, ratioStraight * roadNodes[i].second});
+            traseu[i].push_back({startingX[i], ratioStraight * startingY[i]});
         }
         if (i == 7 or i == 8) {
-            traseu[i].push_back({ratioDiagonal * roadNodes[i].first, ratioDiagonal * roadNodes[i].second});
+            traseu[i].push_back({ratioDiagonal * startingX[i], ratioDiagonal * startingY[i]});
         }
         if (i == 9 or i == 10) {
-            traseu[i].push_back({ratioStraight * roadNodes[i].first, roadNodes[i].second});
+            traseu[i].push_back({ratioStraight * startingX[i], startingY[i]});
         }
         if (i == 11 or i == 12) {
-            traseu[i].push_back({ratioDiagonal * roadNodes[i].first, ratioDiagonal * roadNodes[i].second});
+            traseu[i].push_back({ratioDiagonal * startingX[i], ratioDiagonal * startingY[i]});
         }
         if (i == 13 or i == 14) {
-            traseu[i].push_back({roadNodes[i].first, ratioStraight * roadNodes[i].second});
+            traseu[i].push_back({startingX[i], ratioStraight * startingY[i]});
         }
         if (i == 15 or i == 16) {
-            traseu[i].push_back({ratioDiagonal * roadNodes[i].first, ratioDiagonal * roadNodes[i].second});
+            traseu[i].push_back({ratioDiagonal * startingX[i], ratioDiagonal * startingY[i]});
         }
-        //debug(i, traseu[i]);
     }
 }
 
 void outputRoundabout()
 {
-    SamitoAlex.open("Suggestion2.txt");
+    SamitoAlex.open(nextSuggestion);
+    nextSuggestion[10]++;
 
     SamitoAlex << nrOfRoads + 16 << "\n";
     for (int i = 1; i <= 16; ++i) {
@@ -267,18 +264,113 @@ void outputRoundabout()
     }
 
     vector <pair <double, double> > points(nrRoads);
-
     for (int i = 1; i <= 16; ++i) {
-        points[i] = traseu[i][0];
+        debug(i, traseu[i]);
+        points[i] = traseu[i][1];
+        debug(i, points[i]);
         traseu[i].clear();
     }
 
     for (int i = 2; i <= 16; ++i) {
-        SamitoAlex << points[i - 1].first << " " << (-1)*(points[i - 1].second) << " " << points[i].first <<  " " << points[i].second << "0\n";
-    }
-    SamitoAlex << points[1].first << " " << (-1)*(points[1].second) << " " << points[16].first <<  " " << points[16].second << "0\n";
+        SamitoAlex << points[i - 1].first << " " << (-1)*(points[i - 1].second) << " " << points[i].first <<  " " << (-1)*points[i].second << " 0\n";
 
+    }
+    SamitoAlex << points[1].first << " " << (-1)*(points[1].second) << " " << points[16].first <<  " " << (-1)*points[16].second << " 0\n";
+    SamitoAlex << "Roundabout\n";
     points.clear();
+    SamitoAlex.flush();
+    SamitoAlex.close();
+}
+
+bool checkIfValidFlower()
+{
+    int comingIn, goingOut;
+    comingIn = goingOut = 0;
+    for (int i = 1; i <= 16; ++i) {
+        if (road[i]) {
+            if (i % 2 == 0) {
+                ++comingIn;
+            } else {
+                ++goingOut;
+            }
+        }
+    }
+
+    return comingIn == 1;
+}
+
+void generateFlower()
+{
+    for (int i = 1; i <= 16; ++i) {
+        if (road[i]) {
+            traseu[i].push_back({roadNodes[i].first, roadNodes[i].second});
+        }
+    }
+}
+
+void outputFlower()
+{
+    SamitoAlex.open(nextSuggestion);
+    nextSuggestion[10]++;
+    SamitoAlex << nrOfRoads << "\n";
+    for (int i = 1; i <= 16; ++i) {
+        if (road[i]) {
+            SamitoAlex << traseu[i][0].first << " " << (-1) * traseu[i][0].second << " 0 0 0\n";
+        }
+        traseu[i].clear();
+    }
+    SamitoAlex << "Flower Junction\n";
+    SamitoAlex.flush();
+    SamitoAlex.close();
+}
+
+void outputBouquet()
+{
+    SamitoAlex.open(nextSuggestion);
+    nextSuggestion[10]++;
+    SamitoAlex << nrOfRoads - 1 << "\n";
+
+    double firstX, firstY;
+    for (int i = 1; i <= 16; ++i) {
+        if (road[i] && i % 2 == 0) {
+            firstX = roadNodes[i].first;
+            firstY = roadNodes[i].second;
+        }
+    }
+
+    for (int i = 1; i <= 16; ++i) {
+        if (road[i] && i % 2 == 1) {
+            SamitoAlex << firstX << " " << (-1) * firstY << " " << roadNodes[i].first << " " << (-1) * roadNodes[i].second << " 0\n";
+        }
+    }
+
+    SamitoAlex << "Bouquet Junction\n";
+    SamitoAlex.flush();
+    SamitoAlex.close();
+}
+
+void outputValcele()
+{
+    SamitoAlex.open(nextSuggestion);
+    nextSuggestion[10]++;
+    SamitoAlex << 10 << "\n";
+
+    SamitoAlex << startingX[1] << " " << -startingY[1] << " " << startingX[10] << " " << -startingY[10] << " 0\n";
+    SamitoAlex << startingX[2] << " " << -startingY[2] << " " << startingX[9] << " " << -startingY[9] << " 0\n";
+
+    SamitoAlex << startingX[6] << " " << -startingY[6] << " " << "-15.65 -107.95" << " 0\n";
+    SamitoAlex << "-15.65 -107.95 -44.5 -52.8" << " 0\n";
+    SamitoAlex << "-44.5 -52.8 -127 " << -startingY[2] << " 0\n";
+
+    SamitoAlex << startingX[5] << " " << -startingY[5] << " " << startingX[5] << " -45" << " 0\n";
+    SamitoAlex << startingX[5] << " -45 " << startingX[5] << " 37.35" << " 1\n";
+    SamitoAlex << startingX[5] << " 37.35 55 80.05" << " 0\n";
+    SamitoAlex << "55 80.05 93.1 80.75" << " 0\n";
+    SamitoAlex << "93.1 80.75 130.6 " << -startingY[1] << " 0\n";
+
+
+
+    SamitoAlex << "Valcele\n";
     SamitoAlex.flush();
     SamitoAlex.close();
 }
@@ -287,6 +379,7 @@ void readInfo()
 {
     string code;
     string state;
+    int nrOfOutputs;
 
 //    string sacrifice;
 //    AlextoSami >> sacrifice;
@@ -303,6 +396,8 @@ void readInfo()
 
 
         state = interpretCode(code, state);
+        nextSuggestion = "Suggestion1.txt";
+        nrOfOutputs = 0;
         debug(state);
 
 
@@ -317,36 +412,54 @@ void readInfo()
         if (state == "generateSuggestions") {
             readRoads();
 
-            SamitoAlex.open("StoA.txt");
-            SamitoAlex << "1\n";
-            SamitoAlex.flush();
-            SamitoAlex.close();
-
-//            Generate Centered Junction
-            generateCenteredJunction();
-
-            SamitoAlex.open("StoA.txt", ios::app);
-            SamitoAlex << "Centered Junction\n";
-            SamitoAlex.flush();
-            SamitoAlex.close();
-
-            outputCenteredJunction();
-
-//            Generate Roundabout
-            generateRoundabout();
-
-            SamitoAlex.open("StoA.txt", ios::app);
-            SamitoAlex << "Roundabout\n";
-            SamitoAlex.flush();
-            SamitoAlex.close();
-
-            outputRoundabout();
-
-
             //format for output is:
             // x1 y1 x2 y2 height
             // for each street
+
+//            Generate Centered Junction
+            generateCenteredJunction();
+            outputCenteredJunction();
+            ++nrOfOutputs;
+
+//            Generate Flower Junction
+            if (checkIfValidFlower()) {
+                generateFlower();
+                outputFlower();
+                ++nrOfOutputs;
+            }
+
+//             Generate Bouquet Junction
+            if (checkIfValidFlower()) {
+                outputBouquet();
+                ++nrOfOutputs;
+            }
+
+//            Generate Roundabout
+            generateRoundabout();
+            outputRoundabout();
+            ++nrOfOutputs;
+
+
+            if (road[1] == true and road[2] == true
+                and road[3] == false and road[4] == false
+                and road[5] == true and road[6] == true
+                and road[7] == false and road[8] == false
+                and road[9] == true and road[10] == true
+                and road[11] == false and road[12] == false
+                and road[13] == false and road[14] == false
+                and road[15] == false and road[16] == false) {
+//            Generate Valcele
+                outputValcele();
+                ++nrOfOutputs;
+            }
+
+
         }
+        SamitoAlex.open("StoA.txt");
+        SamitoAlex << nrOfOutputs << "\n";
+        SamitoAlex.flush();
+        SamitoAlex.close();
+
         AlextoSami.close();
     }
 }
