@@ -3,7 +3,7 @@
 #include <shlobj.h>
 #include <bits/stdc++.h>
 #include <unistd.h>
-#define timeWait 2
+#define timeWait 1
 #define nrRoads 20
 #define maxX 142
 #define maxY 142
@@ -63,6 +63,8 @@ string interpretCode(string code, string state)
         state = "createSuggestion";
     } else if (code == "0003") {
         state = "simulateCars";
+    } else if (code == "1111") {
+        state = "idle";
     }
     return state;
 }
@@ -117,7 +119,7 @@ void readRoads(string input)
             roadNodes[i] = {x, y};
         }
     }
-    debug(roadNodes);
+    //debug(roadNodes);
     //AlextoSami.close();
 }
 
@@ -163,7 +165,7 @@ void generateCenteredJunction()
 
 void outputCenteredJunction()
 {
-    SamitoAlex.open(nextSuggestion);
+    SamitoAlex.open(input + "\\" + nextSuggestion);
     nextSuggestion[10]++;
 
     double lastX, lastY;
@@ -240,7 +242,7 @@ void generateRoundabout()
 
 void outputRoundabout()
 {
-    SamitoAlex.open(nextSuggestion);
+    SamitoAlex.open(input + "\\" + nextSuggestion);
     nextSuggestion[10]++;
 
     SamitoAlex << nrOfRoads + 16 << "\n";
@@ -257,9 +259,9 @@ void outputRoundabout()
 
     vector <pair <double, double> > points(nrRoads);
     for (int i = 1; i <= 16; ++i) {
-        debug(i, traseu[i]);
+        //debug(i, traseu[i]);
         points[i] = traseu[i][1];
-        debug(i, points[i]);
+        //debug(i, points[i]);
         traseu[i].clear();
     }
 
@@ -302,7 +304,7 @@ void generateFlower()
 
 void outputFlower()
 {
-    SamitoAlex.open(nextSuggestion);
+    SamitoAlex.open(input + "\\" + nextSuggestion);
     nextSuggestion[10]++;
     SamitoAlex << nrOfRoads << "\n";
     for (int i = 1; i <= 16; ++i) {
@@ -318,7 +320,7 @@ void outputFlower()
 
 void outputBouquet()
 {
-    SamitoAlex.open(nextSuggestion);
+    SamitoAlex.open(input + "\\" + nextSuggestion);
     nextSuggestion[10]++;
     SamitoAlex << nrOfRoads - 1 << "\n";
 
@@ -343,7 +345,7 @@ void outputBouquet()
 
 void outputValcele()
 {
-    SamitoAlex.open(nextSuggestion);
+    SamitoAlex.open(input + "\\" + nextSuggestion);
     nextSuggestion[10]++;
     SamitoAlex << 10 << "\n";
 
@@ -367,6 +369,125 @@ void outputValcele()
     SamitoAlex.close();
 }
 
+void outputHighway()
+{
+    SamitoAlex.open(input + "\\" + nextSuggestion);
+    nextSuggestion[10]++;
+    SamitoAlex << 10 << "\n";
+
+    int left, right, up, down;
+    if (road[1] == true)
+        right = 1;
+    else
+        right = 2;
+
+    if (road[5] == true)
+        up = 5;
+    else
+        up = 6;
+
+    if (road[9] == true)
+        left = 9;
+    else
+        left = 10;
+
+    if (road[13] == true)
+        down = 13;
+    else
+        down = 14;
+
+    SamitoAlex << startingX[down] << " " << -startingY[down] << " " << startingX[up] << " " << -startingY[up] << " 0\n";
+    SamitoAlex << startingX[left] << " " << -startingY[left] << " " << (-1) * maxX / 2 << " " << -startingY[left] << " 0\n";
+    SamitoAlex << startingX[right] << " " << -startingY[right] << " " << maxX / 2 << " " << -startingY[right] << " 0\n";
+    SamitoAlex << (-1) * maxX / 2 << " " << -startingY[left] << " " << maxX / 2 << " " << -startingY[right] << " 1\n";
+
+
+
+
+    SamitoAlex << "Highway Overpass\n";
+    SamitoAlex.flush();
+    SamitoAlex.close();
+}
+
+void outputCloverleaf()
+{
+    SamitoAlex.open(input + "\\" + nextSuggestion);
+    nextSuggestion[10]++;
+    SamitoAlex << 32 << "\n";
+
+    double curveX[10];
+    double curveY[10];
+
+    curveX[1] = 2 * maxX / 3;
+    curveX[2] = maxX / 3;
+    curveX[3] = maxX / 4;
+    curveX[4] = startingX[5];
+
+    curveY[1] = startingY[2];
+    curveY[2] = maxY / 4;
+    curveY[3] = maxY / 3;
+    curveY[4] = 2 * maxY / 3;
+
+    SamitoAlex << startingX[1] << " " << -startingY[1] << " " << startingX[10] << " " << -startingY[10] << " 0\n";
+    SamitoAlex << startingX[2] << " " << -startingY[2] << " " << startingX[9] << " " << -startingY[9] << " 0\n";
+
+    SamitoAlex << curveX[1] << " " << -curveY[1] << " " << curveX[2] << " " << -curveY[2] << " 0\n";
+    SamitoAlex << curveX[2] << " " << -curveY[2] << " " << curveX[3] << " " << -curveY[3] << " 0\n";
+    SamitoAlex << curveX[3] << " " << -curveY[3] << " " << curveX[4] << " " << -curveY[4] << " 0\n";
+
+    SamitoAlex << -curveX[1] << " " << -curveY[1] << " " << -curveX[2] << " " << -curveY[2] << " 0\n";
+    SamitoAlex << -curveX[2] << " " << -curveY[2] << " " << -curveX[3] << " " << -curveY[3] << " 0\n";
+    SamitoAlex << -curveX[3] << " " << -curveY[3] << " " << -curveX[4] << " " << -curveY[4] << " 0\n";
+
+    SamitoAlex << -curveX[1] << " " << curveY[1] << " " << -curveX[2] << " " << curveY[2] << " 0\n";
+    SamitoAlex << -curveX[2] << " " << curveY[2] << " " << -curveX[3] << " " << curveY[3] << " 0\n";
+    SamitoAlex << -curveX[3] << " " << curveY[3] << " " << -curveX[4] << " " << curveY[4] << " 0\n";
+
+    SamitoAlex << curveX[1] << " " << curveY[1] << " " << curveX[2] << " " << curveY[2] << " 0\n";
+    SamitoAlex << curveX[2] << " " << curveY[2] << " " << curveX[3] << " " << curveY[3] << " 0\n";
+    SamitoAlex << curveX[3] << " " << curveY[3] << " " << curveX[4] << " " << curveY[4] << " 0\n";
+
+    SamitoAlex << startingX[5] << " " << -startingY[5] << " " << startingX[5] << " " << -curveY[4] << " 0\n";
+    SamitoAlex << startingX[6] << " " << -startingY[6] << " " << startingX[6] << " " << -curveY[4] << " 0\n";
+
+    SamitoAlex << startingX[13] << " " << -startingY[13] << " " << startingX[13] << " " << curveY[4] << " 0\n";
+    SamitoAlex << startingX[14] << " " << -startingY[14] << " " << startingX[14] << " " << curveY[4] << " 0\n";
+
+    SamitoAlex << startingX[5] << " " << -curveY[4] << " " << startingX[5] << " " << curveY[4] << " 1\n";
+    SamitoAlex << startingX[6] << " " << -curveY[4] << " " << startingX[6] << " " << curveY[4] << " 1\n";
+
+    curveX[1] = maxX / 6;
+    curveX[2] = maxX / 5;
+    curveX[3] = maxX / 6;
+    curveX[4] = startingX[5];
+
+    curveY[1] = startingY[2];
+    curveY[2] = maxY / 6;
+    curveY[3] = maxY / 5;
+    curveY[4] = maxY / 6;
+
+    SamitoAlex << curveX[1] << " " << -curveY[1] << " " << curveX[2] << " " << -curveY[2] << " 0\n";
+    SamitoAlex << curveX[2] << " " << -curveY[2] << " " << curveX[3] << " " << -curveY[3] << " 1\n";
+    SamitoAlex << curveX[3] << " " << -curveY[3] << " " << curveX[4] << " " << -curveY[4] << " 1\n";
+
+    SamitoAlex << -curveX[1] << " " << -curveY[1] << " " << -curveX[2] << " " << -curveY[2] << " 0\n";
+    SamitoAlex << -curveX[2] << " " << -curveY[2] << " " << -curveX[3] << " " << -curveY[3] << " 1\n";
+    SamitoAlex << -curveX[3] << " " << -curveY[3] << " " << -curveX[4] << " " << -curveY[4] << " 1\n";
+
+    SamitoAlex << -curveX[1] << " " << curveY[1] << " " << -curveX[2] << " " << curveY[2] << " 0\n";
+    SamitoAlex << -curveX[2] << " " << curveY[2] << " " << -curveX[3] << " " << curveY[3] << " 1\n";
+    SamitoAlex << -curveX[3] << " " << curveY[3] << " " << -curveX[4] << " " << curveY[4] << " 1\n";
+
+    SamitoAlex << curveX[1] << " " << curveY[1] << " " << curveX[2] << " " << curveY[2] << " 0\n";
+    SamitoAlex << curveX[2] << " " << curveY[2] << " " << curveX[3] << " " << curveY[3] << " 1\n";
+    SamitoAlex << curveX[3] << " " << curveY[3] << " " << curveX[4] << " " << curveY[4] << " 1\n";
+
+
+    SamitoAlex << "Cloverfield Interchange\n";
+    SamitoAlex.flush();
+    SamitoAlex.close();
+}
+
 void readInfo()
 {
     string code;
@@ -376,20 +497,20 @@ void readInfo()
     state = "idle";
 
 
-    debug(input);
+    //debug(input);
 
     while (true) {
 
         sleep(timeWait);
         AlextoSami.open(input + "\\alextosami.txt");
         AlextoSami >> code;
-        debug(code);
+        //debug(code);
 
 
         state = interpretCode(code, state);
         nextSuggestion = "Suggestion1.txt";
         nrOfOutputs = 0;
-        debug(state);
+        //debug(state);
 
 
 
@@ -444,9 +565,19 @@ void readInfo()
                 ++nrOfOutputs;
             }
 
+            if (nrOfRoads == 4 and (((road[1] == road[10] == true) or (road[2] == road[9] == true))) and (((road[5] == road[14] == true) or (road[6] == road[13] == true)))) {
+//            Generate Highway
+                outputHighway();
+                ++nrOfOutputs;
+            }
 
+            if (nrOfRoads == 8 and (road[1] == road[2] == road[5] == road[6] == road[9] == road[10] == road[13] == road[14] == true)) {
+//            Generate Cloverleaf
+                outputCloverleaf();
+                ++nrOfOutputs;
+            }
         }
-        SamitoAlex.open("samitoalex.txt");
+        SamitoAlex.open(input + "\\samitoalex.txt");
         SamitoAlex << nrOfOutputs << "\n";
         SamitoAlex.flush();
         SamitoAlex.close();
@@ -455,8 +586,25 @@ void readInfo()
     }
 }
 
+void prepareToClose()
+{
+    SamitoAlex.open(input + "\\samitoalex.txt");
+    SamitoAlex << "0";
+    SamitoAlex.close();
+}
+
+void prepareToOpen()
+{
+    SamitoAlex.open(input + "\\alextosami.txt");
+    SamitoAlex << "1111";
+    SamitoAlex.close();
+}
+
 int main()
 {
+    prepareToOpen();
+    ShellExecute(NULL, "open", "GUI.exe", NULL, NULL, SW_SHOWDEFAULT);
     readInfo();
+    prepareToClose();
     return 0;
 }
