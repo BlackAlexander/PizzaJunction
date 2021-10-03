@@ -1,3 +1,6 @@
+#include <windows.h>
+#include <iostream>
+#include <shlobj.h>
 #include <bits/stdc++.h>
 #include <unistd.h>
 #define timeWait 2
@@ -9,6 +12,7 @@
 #define PI 3.14159265
 #define ratioConstant 0.05
 
+#pragma comment(lib, "shell32.lib")
 
 using namespace std;
 
@@ -40,7 +44,11 @@ void _print(T t, V... v) {__print(t); if (sizeof...(v)) cerr << ", "; _print(v..
 #define debug(x...)
 #endif
 
-ifstream AlextoSami("AlextoSami.txt"); // INPUT
+CHAR my_documents[MAX_PATH];
+HRESULT result = SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, 1, my_documents);
+string input(my_documents);
+
+ifstream AlextoSami(input + "\\alextosami.txt"); // INPUT
 ofstream SamitoAlex; // OUTPUT
 
 
@@ -88,9 +96,9 @@ const double startingY[17] = {0, -offset, offset, //1 2
                      };
 int nrOfRoads;
 
-void readRoads()
+void readRoads(string input)
 {
-
+    //AlextoSami.open(input);
     char word;
     nrOfRoads = 0;
     for (int i = 1; i <= 16; ++i) {
@@ -110,10 +118,7 @@ void readRoads()
         }
     }
     debug(roadNodes);
-
-//    for (int i = 1; i <= 16 ; ++i) {
-//        debug(i, startingX[i], startingY[i]);
-//    }
+    //AlextoSami.close();
 }
 
 vector <pair <double, double> > traseu[nrRoads];
@@ -186,19 +191,6 @@ void outputCenteredJunction()
                 lastY = -traseu[i][j].second;
 
             }
-//            else {
-//                SamitoAlex << traseu[i][j].first << " " << (-1)*(traseu[i][j].second) << "\n\n";
-//
-//                if (lastX != -1000 and lastY != -1000) {
-//                    SamitoAlex << lastX << " " << lastY << "\n";
-//                    SamitoAlex << traseu[i][j].first << " " << (-1)*(traseu[i][j].second) << "\n\n";
-//                }
-//                lastX = traseu[i][j].first;
-//                lastY = int(-traseu[i][j].second);
-//
-//                SamitoAlex << traseu[i][j].first << " " << (-1)*(traseu[i][j].second) << "\n";
-//            }
-            //debug(lastX, lastY);
         }
         traseu[i].clear();
     }
@@ -381,16 +373,15 @@ void readInfo()
     string state;
     int nrOfOutputs;
 
-//    string sacrifice;
-//    AlextoSami >> sacrifice;
-
     state = "idle";
 
+
+    debug(input);
+
     while (true) {
+
         sleep(timeWait);
-        AlextoSami.open("AlextoSami.txt");
-
-
+        AlextoSami.open(input + "\\alextosami.txt");
         AlextoSami >> code;
         debug(code);
 
@@ -410,7 +401,7 @@ void readInfo()
         if (state == "exit")
             return;
         if (state == "generateSuggestions") {
-            readRoads();
+            readRoads(input);
 
             //format for output is:
             // x1 y1 x2 y2 height
@@ -455,7 +446,7 @@ void readInfo()
 
 
         }
-        SamitoAlex.open("StoA.txt");
+        SamitoAlex.open("samitoalex.txt");
         SamitoAlex << nrOfOutputs << "\n";
         SamitoAlex.flush();
         SamitoAlex.close();
@@ -463,12 +454,6 @@ void readInfo()
         AlextoSami.close();
     }
 }
-
-//void writeInfo()
-//{
-//    SamitoAlex << code;
-//    SamitoAlex.flush();
-//}
 
 int main()
 {
